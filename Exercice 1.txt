@@ -1,0 +1,20 @@
+TP2 Traitement d'image
+Exercice 1
+
+1.
+rmin = 1; rmax = 100; dr = 2 => 50 valeurs discrète de r
+dr = 0.5 => 200 valeurs discrètes
+
+2.
+On suppose que les cercles ne doivent pas être affichés intégralement dans l'image
+rmin = 1; rmax = 100; dr = 1; cmin = 1; cmax = 100; dc = 1; radmin = 5; radmax = 100*sqrt(2); drad = 1
+Il peut y avoir 100*100 (= 10 000) centres de cercles différents
+avec 100*sqrt(2)-5 (= 136) rayons de cercles différents
+Donc 10 000 * 136 = 1 360 000
+
+3.
+Le cercle associé à acc(1,1,1) est le cercle de centre (1;1) et de rayon 1
+Le cercle associé à acc(10,7,30) est le cercle de centre (10;7) et de rayon 30
+
+4.
+La case de l'accumulateur associé au cercle de centre (40;40) et de rayon 13 est acc(40,40,13)
