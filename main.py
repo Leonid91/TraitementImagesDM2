@@ -17,3 +17,5 @@ displayImg(blurredImg)
 #2. Filtrage de Sobel, calcul de la magnitude de gradient Imag dans chaque pixel
 #TODO
 #sobel_x = cv2.Sobel(blurredImg, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)
+
+print("Test test tets")
