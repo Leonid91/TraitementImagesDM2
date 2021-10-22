@@ -13,3 +13,7 @@ blur_x = 3
 blur_y = 3
 blurredImg = cv2.blur(image, (blur_x, blur_y))
 displayImg(blurredImg)
+
+#2. Filtrage de Sobel, calcul de la magnitude de gradient Imag dans chaque pixel
+#TODO
+#sobel_x = cv2.Sobel(blurredImg, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)
