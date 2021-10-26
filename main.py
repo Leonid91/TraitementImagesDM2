@@ -11,8 +11,8 @@ image = cv2.imread("images/fourn.png", cv2.IMREAD_GRAYSCALE)
 #displayImg(image)
 
 #1.  Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
-blur_x = 3
-blur_y = 3
+blur_x = 5
+blur_y = 5
 blurredImg = cv2.blur(image, (blur_x, blur_y))
 #displayImg(blurredImg)
 
@@ -27,7 +27,8 @@ sobelY = cv2.Sobel(blurredImg, cv2.CV_64F, 0, 1, ksize=5)  # y
 #displayImg(sobelY)
 
 magnitude = np.sqrt((sobelX ** 2) + (sobelY ** 2))
-#displayImg(magnitude)
+magnitude = magnitude / np.max(magnitude) 
+displayImg(magnitude)
 
 #plt.subplot(2,2,3),plt.imshow(sobelX, cmap = 'gray')
 #plt.title('Sobel X'), plt.xticks([]), plt.yticks([])
@@ -39,4 +40,36 @@ magnitude = np.sqrt((sobelX ** 2) + (sobelY ** 2))
 plt.show()
 
 # Question 3
+
+# Fraction t
+t = 800
+
+# Pour copier les valeurs > t (seuil) dans une matrice de copie
+matriceCopieSuperieur = np.ones_like(magnitude)
+
+s = 0.0
+for i in range(0, magnitude.shape[0]):
+    for j in range(0, magnitude.shape[1]):
+        #print(magnitude[i, j])
+        if magnitude[i, j] > t:
+            magnitude[i, j] = 255
+            matriceCopieSuperieur[i, j] = magnitude[i, j]
+        else:
+            magnitude[i, j] = 0
+        s = s + magnitude[i, j]
+    #print("Somme = ", s)
+
+plt.subplot(2,2,1),plt.imshow(magnitude, cmap = 'gray')
+plt.title('Magnitude'), plt.xticks([]), plt.yticks([])
+
+# Une autre façon d'afficher :
+#plt.imshow(magnitude)
+
+plt.show()
+
+
+
+### Mettre dans le comtpe-rendu qu'on a dut modifier le filtre gaussien car il y avait trop de bruit (3, 3) -> (5, 5)
+
+       
 
