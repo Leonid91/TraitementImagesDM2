@@ -45,7 +45,7 @@ t = 0.26
 # Pour copier les valeurs > t (seuil) dans une matrice de copie
 matriceCopieSuperieur = np.ones_like(magnitude)
 
-s = 0.0
+#s = 0.0
 for i in range(0, magnitude.shape[0]):
     for j in range(0, magnitude.shape[1]):
         if magnitude[i, j] > t:
@@ -53,9 +53,9 @@ for i in range(0, magnitude.shape[0]):
             matriceCopieSuperieur[i, j] = magnitude[i, j]
         else:
             magnitude[i, j] = 0
-        s = s + magnitude[i, j]
+        #s = s + magnitude[i, j]
 
-displayImg(magnitude)
+#displayImg(magnitude)
 
 # Une autre façon d'afficher :
 #plt.subplot(2,2,1),plt.imshow(magnitude, cmap = 'gray')
@@ -66,6 +66,13 @@ displayImg(magnitude)
 #plt.show()
 
 ### Mettre dans le comtpe-rendu qu'on a dut modifier le filtre gaussien car il y avait trop de bruit (3, 3) -> (5, 5)
+
+#4. Initialisation de toutes les valeurs de l'accumulateur acc à 0
+taille1, taille2 = 3, magnitude.size # Potentiellement les centres des cercles peuvent êtres partout d'ans l'image, même si ce sont des cercles incomplets
+# taille de l'image <=> nombre de cercles
+acc = [[0 for x in range(taille1)] for y in range(taille2)]
+
+
 
        
 
