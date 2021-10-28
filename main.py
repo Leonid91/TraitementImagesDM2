@@ -67,10 +67,22 @@ for i in range(0, magnitude.shape[0]):
 
 ### Mettre dans le comtpe-rendu qu'on a dut modifier le filtre gaussien car il y avait trop de bruit (3, 3) -> (5, 5)
 
+
 #4. Initialisation de toutes les valeurs de l'accumulateur acc à 0
-taille1, taille2 = 3, magnitude.size # Potentiellement les centres des cercles peuvent êtres partout d'ans l'image, même si ce sont des cercles incomplets
-# taille de l'image <=> nombre de cercles
-acc = [[0 for x in range(taille1)] for y in range(taille2)]
+
+# FAUX : tableau tridimensionnel
+#taille1, taille2 = 3, magnitude.size # Potentiellement les centres des cercles peuvent êtres partout d'ans l'image, même si ce sont des cercles incomplets
+## taille de l'image <=> nombre de cercles
+#acc = [[0 for x in range(taille1)] for y in range(taille2)]
+
+i = magnitude.size
+j = magnitude.size
+k = 3 # Car r, c puis rad
+
+acc = np.zeros((i, j, k))
+print(acc)
+
+#5. Calcul du rayon rad pour que le cercle situé en (r, c) passe par le pixel respectif, incrementation dans l'accumulateur de la case qui correspond ) (r, c, rad)
 
 
 
