@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt # A commenter si utilisation seulement de displa
 import numpy as np
 import math
 import cv2
+import scipy.ndimage as ndimage
 
 def displayImg(img):
     cv2.imshow("Test Display", img)
@@ -93,6 +94,10 @@ for row in range(0, magnitude.shape[0]):
         acc[row][col][int(t)] +=1
 
 
+#6 On cherche les maximums locaux
+
+locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on a 26 cases voisines
+print(locMax)
 
 
        
