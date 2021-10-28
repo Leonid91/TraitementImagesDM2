@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt # A commenter si utilisation seulement de displayImg() définie ci-dessous.
 import numpy as np
+import math
 import cv2
 
 def displayImg(img):
@@ -80,9 +81,17 @@ j = magnitude.size
 k = 3 # Car r, c puis rad
 
 acc = np.zeros((i, j, k))
-print(acc)
+
 
 #5. Calcul du rayon rad pour que le cercle situé en (r, c) passe par le pixel respectif, incrementation dans l'accumulateur de la case qui correspond ) (r, c, rad)
+for row in range(0, magnitude.shape[0]):
+    for col in range(0, magnitude.shape[1]):
+        xi = magnitude[0][row]
+        yi = magnitude[col][0]
+
+        rad = math.sqrt((xi - row)**2 + (yi - col)**2)
+        acc[row][col][int(t)] +=1
+
 
 
 
