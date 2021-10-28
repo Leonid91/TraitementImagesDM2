@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # A commenter si utilisation seulement de displayImg() définie ci-dessous.
 import numpy as np
 import cv2
 
@@ -10,25 +10,23 @@ def displayImg(img):
 image = cv2.imread("images/fourn.png", cv2.IMREAD_GRAYSCALE)
 #displayImg(image)
 
-#1.  Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
+#1. Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
 blur_x = 5
 blur_y = 5
-blurredImg = cv2.blur(image, (blur_x, blur_y))
+blurredImg = cv2.GaussianBlur(image, (blur_x, blur_y), 0)
 #displayImg(blurredImg)
 
-#2.  Filtrage de Sobel, calcul de la magnitude de gradient Imag dans chaque
-#pixel
-#TODO
-#sobel_x = cv2.Sobel(blurredImg, ddepth=cv2.CV_64F, dx=1, dy=0, ksize=5)
-
-sobelX = cv2.Sobel(blurredImg, cv2.CV_64F, 1, 0, ksize=5)  # x
+#2. Filtrage de Sobel, calcul de la magnitude de gradient Imag dans chaque pixel
+sobelX = cv2.Sobel(blurredImg, cv2.CV_64F, 1, 0, ksize=5)  # X
 #displayImg(sobelX)
-sobelY = cv2.Sobel(blurredImg, cv2.CV_64F, 0, 1, ksize=5)  # y
+sobelY = cv2.Sobel(blurredImg, cv2.CV_64F, 0, 1, ksize=5)  # Y
 #displayImg(sobelY)
 
 magnitude = np.sqrt((sobelX ** 2) + (sobelY ** 2))
-magnitude = magnitude / np.max(magnitude) 
-displayImg(magnitude)
+magnitude = magnitude / np.max(magnitude) # Pour ramener les valeurs des pixels dans l'intervalle [0, 1], pour que celà soit utilisable avec displayImg
+#displayImg(magnitude)
+
+# Une autre façon d'afficher les images : (à paraméter pour l'intervalle [0, 1]
 
 #plt.subplot(2,2,3),plt.imshow(sobelX, cmap = 'gray')
 #plt.title('Sobel X'), plt.xticks([]), plt.yticks([])
@@ -37,12 +35,12 @@ displayImg(magnitude)
 #plt.subplot(2,2,1),plt.imshow(magnitude, cmap = 'gray')
 #plt.title('Magnitude'), plt.xticks([]), plt.yticks([])
 
-plt.show()
+#plt.show()
 
-# Question 3
+#3. Mise en contraste des contours
 
 # Fraction t
-t = 800
+t = 0.26
 
 # Pour copier les valeurs > t (seuil) dans une matrice de copie
 matriceCopieSuperieur = np.ones_like(magnitude)
@@ -50,24 +48,22 @@ matriceCopieSuperieur = np.ones_like(magnitude)
 s = 0.0
 for i in range(0, magnitude.shape[0]):
     for j in range(0, magnitude.shape[1]):
-        #print(magnitude[i, j])
         if magnitude[i, j] > t:
             magnitude[i, j] = 255
             matriceCopieSuperieur[i, j] = magnitude[i, j]
         else:
             magnitude[i, j] = 0
         s = s + magnitude[i, j]
-    #print("Somme = ", s)
 
-plt.subplot(2,2,1),plt.imshow(magnitude, cmap = 'gray')
-plt.title('Magnitude'), plt.xticks([]), plt.yticks([])
+displayImg(magnitude)
 
 # Une autre façon d'afficher :
+#plt.subplot(2,2,1),plt.imshow(magnitude, cmap = 'gray')
+#plt.title('Magnitude'), plt.xticks([]), plt.yticks([])
+# Ou
 #plt.imshow(magnitude)
 
-plt.show()
-
-
+#plt.show()
 
 ### Mettre dans le comtpe-rendu qu'on a dut modifier le filtre gaussien car il y avait trop de bruit (3, 3) -> (5, 5)
 
