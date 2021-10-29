@@ -40,8 +40,7 @@ magnitude = magnitude / np.max(magnitude) # Pour ramener les valeurs des pixels 
 #plt.show()
 
 #3. Mise en contraste des contours
-
-# Fraction t
+# Fraction t, fixée à partir de plusieurs tests
 t = 0.26
 
 # Pour copier les valeurs > t (seuil) dans une matrice de copie
@@ -67,8 +66,6 @@ for i in range(0, magnitude.shape[0]):
 
 #plt.show()
 
-### Mettre dans le comtpe-rendu qu'on a dut modifier le filtre gaussien car il y avait trop de bruit (3, 3) -> (5, 5)
-
 
 #4. Initialisation de toutes les valeurs de l'accumulateur acc à 0
 
@@ -82,43 +79,27 @@ acc = np.zeros((I, J, int(K)))
 #5. Calcul du rayon rad pour que le cercle situé en (r, c) passe par le pixel respectif, incrementation dans l'accumulateur de la case qui correspond ) (r, c, rad)
 for row in range(0, magnitude.shape[0]):
     for col in range(0, magnitude.shape[1]):
+        # Pas très sur si j'ai bien sélectionné les x et les y, il est possible que je les ai inversés, mais ça n'as peut-être pas d'importance pour le calcul
         xi = magnitude[0][row]
         yi = magnitude[col][0]
 
-        rad = math.sqrt((xi - row)**2 + (yi - col)**2)
+        rad = math.sqrt((xi - row)**2 + (yi - col)**2) ### On l'as vu dans le cours et je l'ai également trouvé sur internet cette formule
         acc[row][col][int(rad)] +=1
 
 
 #6 On cherche les maximums locaux
-
 locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on a 26 cases voisines
 #print(locMax)
 
 #7 Normalization, votes et visualisation
 
-# On parcours l'acc
-#for i in range(I):
-#    for j in range(J):
-#        for k in range(K):
-#            pass
-
-### Normalisation 1
-### Doc sur la normalization : https://stackoverflow.com/questions/60838631/how-to-normalise-a-3d-array
-#matMax = np.max(locMax)
-#matMin = np.min(locMax)
-#matRange = matMax - matMin
-
-## Matrice normalisée
-#locMaxNorm = ((locMax - matMin) / matRange - 0.5) * 2
-
-### Normalisation 2
-### Pour normaliser en divisant par le rayon
+### Pour normaliser en divisant par le rayon.
 locMaxNorm = np.copy(locMax)
 
 for i in range(I):
     for j in range(J):
         for k in range(K):
-            if k!= 0:
+            if k!= 0: # On divise par le rayon si lerayon n'est pas nul <=> le cercle existe
                 locMaxNorm[i][j][k] = locMax[i][j][k] / k
 
 # Nombre de plus hautes valeurs qu'on veut sélectionner
