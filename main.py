@@ -86,10 +86,17 @@ for row in range(0, magnitude.shape[0]):
         rad = math.sqrt((xi - row)**2 + (yi - col)**2) ### On l'as vu dans le cours et je l'ai également trouvé sur internet cette formule
         acc[row][col][int(rad)] +=1
 
+#print(acc)
 
 #6 On cherche les maximums locaux
 locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on a 26 cases voisines
 #print(locMax)
+
+#print("localMax.shape \n")
+#print(locMax.shape)
+#print("\n")
+#print("acc.shape \n")
+#print(acc.shape)
 
 #7 Normalization, votes et visualisation
 
@@ -99,11 +106,20 @@ locMaxNorm = np.copy(locMax)
 for i in range(I):
     for j in range(J):
         for k in range(K):
-            if k!= 0: # On divise par le rayon si lerayon n'est pas nul <=> le cercle existe
+            if k!= 0: # On divise par le rayon si le rayon n'est pas nul <=> le cercle existe
                 locMaxNorm[i][j][k] = locMax[i][j][k] / k
 
 # Nombre de plus hautes valeurs qu'on veut sélectionner
-N = 3
-selectedValues = np.argsort(locMaxNorm)[-N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
+N = 10
+selectedValues = np.argsort(locMaxNorm)[-N:, -N:, -N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
 #print(selectedValues) # Test...
 
+for x in range(selectedValues.shape[0]):
+    for y in range(selectedValues.shape[1]):
+        for z in range(selectedValues.shape[2]):
+            a = int(selectedValues[0][x][0])
+            b = int(selectedValues[y][0][0])
+            rad = int(selectedValues[0][0][z])
+            cv2.circle(image, (a, b), rad, (0, 255, 0))
+
+displayImg(image)
