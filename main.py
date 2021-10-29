@@ -72,11 +72,11 @@ for i in range(0, magnitude.shape[0]):
 
 #4. Initialisation de toutes les valeurs de l'accumulateur acc à 0
 
-I = magnitude.size
-J = magnitude.size
+I = magnitude.shape[0] # Height
+J = magnitude.shape[1] # Width
 K = int(math.sqrt(I**2 + J**2)) # De 1 à maxRadius. Donc jusqu'au sqrt(rows**2 + cols**2)
 
-acc = np.zeros((I, J, int(K)), dtype='uint8')
+acc = np.zeros((I, J, int(K)))
 
 
 #5. Calcul du rayon rad pour que le cercle situé en (r, c) passe par le pixel respectif, incrementation dans l'accumulateur de la case qui correspond ) (r, c, rad)
