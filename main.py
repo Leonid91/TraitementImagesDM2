@@ -104,21 +104,25 @@ locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on 
 
 ### Normalisation 1
 ### Doc sur la normalization : https://stackoverflow.com/questions/60838631/how-to-normalise-a-3d-array
-matMax = np.max(locMax)
-matMin = np.min(locMax)
-matRange = matMax - matMin
+#matMax = np.max(locMax)
+#matMin = np.min(locMax)
+#matRange = matMax - matMin
 
-# Matrice normalisée
-locMaxNorm = ((locMax - matMin) / matRange - 0.5) * 2
+## Matrice normalisée
+#locMaxNorm = ((locMax - matMin) / matRange - 0.5) * 2
 
 ### Normalisation 2
 ### Pour normaliser en divisant par le rayon
-#for i in range(I):
-#    for j in range(J):
-#        for k in range(K):
-#            locMax[i][j][k] = locMax[i][j][k] / k
+locMaxNorm = np.copy(locMax)
 
-N = 2
-selectedValues = np.argsort(locMaxNorm)[-N:]
-print(selectedValues)
+for i in range(I):
+    for j in range(J):
+        for k in range(K):
+            if k!= 0:
+                locMaxNorm[i][j][k] = locMax[i][j][k] / k
+
+# Nombre de plus hautes valeurs qu'on veut sélectionner
+N = 3
+selectedValues = np.argsort(locMaxNorm)[-N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
+#print(selectedValues) # Test...
 
