@@ -6,7 +6,7 @@ import cv2
 import scipy.ndimage as ndimage
 
 def displayImg(img):
-    cv2.imshow("Test Display", img)
+    cv2.imshow("Display", img)
     cv2.waitKey(0)
 
 def sobel():
@@ -68,6 +68,14 @@ def classic_hough(I, J, K):
                         acc[row][col][int(rad)] +=1
     return acc
 
+def astuce1():
+    #On réduit la taille de l'image
+    ratio = 0.25
+    width = int(image.shape[1] * ratio)
+    height = int(image.shape[0] * ratio)
+    dim = (width, height)
+    resized = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+
 def normalize(I,J,K, locMax):
     locMaxNorm = np.copy(locMax)
 
@@ -113,11 +121,10 @@ locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on 
 locMaxNorm = normalize(I, J, K, locMax)
 
 # Nombre de plus hautes valeurs qu'on veut sélectionner
-N = 10
+N = 5
 selectedValues = np.argsort(locMaxNorm)[-N:, -N:, -N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
 #print(selectedValues) # Test...
 
-result = np.zeros_like(image)
 
 for x in range(selectedValues.shape[0]):
     for y in range(selectedValues.shape[1]):
@@ -125,6 +132,6 @@ for x in range(selectedValues.shape[0]):
             a = int(selectedValues[0][x][0])
             b = int(selectedValues[y][0][0])
             rad = int(selectedValues[0][0][z])
-            cv2.circle(result, (a, b), rad, (0, 1, 0))
+            cv2.circle(image, (a, b), rad, (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
 
-displayImg(result)
+displayImg(image)
