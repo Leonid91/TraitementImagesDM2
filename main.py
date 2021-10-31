@@ -122,7 +122,7 @@ locMaxNorm = normalize(I, J, K, locMax)
 for x in range(locMaxNorm.shape[0]):
     for y in range(locMaxNorm.shape[1]):
         for z in range(locMaxNorm.shape[2]):
-            if locMaxNorm[x][y][z] >= 8:
+            if locMaxNorm[x][y][z] >= locMaxNorm.max():
                 circlesNormalized.append((x,y,z, locMaxNorm[x][y][z]))
 
 for c in range(0, len(circlesNormalized)):
