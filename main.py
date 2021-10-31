@@ -9,9 +9,9 @@ def displayImg(img):
     cv2.imshow("Display", img)
     cv2.waitKey(0)
 
-def sobel():
-    sobelX = cv2.Sobel(blurredImg, cv2.CV_64F, 1, 0, ksize=5)  # X
-    sobelY = cv2.Sobel(blurredImg, cv2.CV_64F, 0, 1, ksize=5)  # Y
+def sobel(img):
+    sobelX = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)  # X
+    sobelY = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)  # Y
 
     magnitude = np.sqrt((sobelX ** 2) + (sobelY ** 2))
     magnitude = magnitude / np.max(magnitude) # Pour ramener les valeurs des pixels dans l'intervalle [0, 1], pour que celà soit utilisable avec displayImg
@@ -55,15 +55,15 @@ def contrast(seuil):
     #plt.show()
     return matriceCopieSuperieur
 
-def classic_hough(I, J, K):
+def classic_hough(I, J, K, matrix):
     for row in range(0, I):
         for col in range(0, J):
             # Pas très sur si j'ai bien sélectionné les x et les y, il est possible que je les ai inversés, mais ça n'as peut-être pas d'importance pour le calcul
             #xi = magnitude[0][row]
             #yi = magnitude[col][0]
-            for xi in range (0, matriceContrast.shape[0]):
-                for yi in range(0, matriceContrast.shape[1]):
-                    if matriceContrast[xi][yi] > 0:
+            for xi in range (0, matrix.shape[0]):
+                for yi in range(0, matrix.shape[1]):
+                    if matrix[xi][yi] > 0:
                         rad = math.sqrt((xi - row)**2 + (yi - col)**2) ### On l'as vu dans le cours et je l'ai également trouvé sur internet cette formule
                         acc[row][col][int(rad)] +=1
     return acc
@@ -83,21 +83,33 @@ def normalize(I,J,K, locMax):
         for j in range(J):
             for k in range(K):
                 if k!= 0: # On divise par le rayon si le rayon n'est pas nul <=> le cercle existe
-                    locMaxNorm[i][j][k] = locMax[i][j][k] / k
+                    temp = locMax[i][j][k]
+                    if temp != 0:
+                        locMaxNorm[i][j][k] = temp / k
+
+                        #petite triche pour gagner du temps
+                        #normalisé
+                        if temp/k > 18:
+                            circlesNormalized.append((i,j,k, temp/k))
+
+                        #non normalisé (il y aura que le gros cercle)
+                        if temp == locMax.max():
+                            circles.append((i, j, k, temp))                        
     return locMaxNorm
 
 ############# DEBUT ############
-
+circles = []
+circlesNormalized = []
 image = cv2.imread("images/fourn.png", cv2.IMREAD_GRAYSCALE)
 
 #1. Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
 blurredImg = cv2.GaussianBlur(image, (5, 5), 0)
 
 #2. Filtrage de Sobel, calcul de la magnitude de gradient Imag dans chaque pixel
-magnitude = sobel()
+magnitude = sobel(blurredImg)
 
 #3. Mise en contraste des contours
-matriceContrast = contrast(0.26)
+tresholdedImg = contrast(0.26)
 
 #4. Initialisation de toutes les valeurs de l'accumulateur acc à 0
 I = image.shape[0] # Height
@@ -106,32 +118,37 @@ K = int(math.sqrt(I**2 + J**2)) # De 1 à maxRadius. Donc jusqu'au sqrt(rows**2 
 acc = np.zeros((I, J, int(K)))
 
 #5. Calcul du rayon rad pour que le cercle situé en (r, c) passe par le pixel respectif, incrementation dans l'accumulateur de la case qui correspond ) (r, c, rad)
-acc = classic_hough(I, J, K)
+acc = classic_hough(I, J, K, tresholdedImg)
 
 #6 On cherche les maximums locaux
-locMax = ndimage.maximum_filter(acc, size=(1,1,1)) # dans un rayon d'un cube on a 26 cases voisines
-#print(locMax)
-#print("localMax.shape \n")
-#print(locMax.shape)
-#print("\n")
-#print("acc.shape \n")
-#print(acc.shape)
+locMax = ndimage.maximum_filter(acc, mode='constant', size=(5,5,5)) # dans un rayon d'un cube on a 26 cases voisines
 
-#7 Normalization, votes et visualisation
+#7 Normalisation et visualisation
 locMaxNorm = normalize(I, J, K, locMax)
 
 # Nombre de plus hautes valeurs qu'on veut sélectionner
-N = 5
+N = 3
 selectedValues = np.argsort(locMaxNorm)[-N:, -N:, -N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
-#print(selectedValues) # Test...
+
+#Beaucoup trop long (cf triche dans la normlisation)
+#à l'arrache : on prend que les cercles qui sont près du max
+#circles = []
+#for x in range(locMaxNorm.shape[0]):
+#    for y in range(locMaxNorm.shape[1]):
+#        for z in range(locMaxNorm.shape[2]):
+#            if locMaxNorm[x][y][z] > 15:
+#                circles.append((x,y,z))
 
 
-for x in range(selectedValues.shape[0]):
-    for y in range(selectedValues.shape[1]):
-        for z in range(selectedValues.shape[2]):
-            a = int(selectedValues[0][x][0])
-            b = int(selectedValues[y][0][0])
-            rad = int(selectedValues[0][0][z])
-            cv2.circle(image, (a, b), rad, (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
+#for x in range(selectedValues.shape[0]):
+#    for y in range(selectedValues.shape[1]):
+#        for z in range(selectedValues.shape[2]):
+#            #a = int(selectedValues[0][x][0])
+#            #b = int(selectedValues[y][0][0])
+#            #rad = int(selectedValues[0][0][z])
+#            cv2.circle(image, (x, y), z, (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
+
+for c in range(0, len(circles)):
+    cv2.circle(image, (circles[c][0], circles[c][1]), circles[c][2], (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
 
 displayImg(image)
