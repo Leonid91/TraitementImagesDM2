@@ -58,9 +58,6 @@ def contrast(seuil):
 def classic_hough(I, J, K, matrix):
     for row in range(0, I):
         for col in range(0, J):
-            # Pas très sur si j'ai bien sélectionné les x et les y, il est possible que je les ai inversés, mais ça n'as peut-être pas d'importance pour le calcul
-            #xi = magnitude[0][row]
-            #yi = magnitude[col][0]
             for xi in range (0, matrix.shape[0]):
                 for yi in range(0, matrix.shape[1]):
                     if matrix[xi][yi] > 0:
