@@ -4,6 +4,7 @@ import numpy as np
 import math
 import cv2
 import scipy.ndimage as ndimage
+import timeit
 
 def displayImg(img):
     cv2.imshow("Display", img)
@@ -90,6 +91,9 @@ def normalize(I,J,K, locMax):
     return locMaxNorm
 
 ############# DEBUT ############
+### Début du chronomètre
+start_time = timeit.default_timer()
+
 image = cv2.imread("images/fourn.png", cv2.IMREAD_GRAYSCALE)
 
 #1. Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
@@ -129,3 +133,7 @@ for c in range(0, len(circlesNormalized)):
     cv2.circle(image, (circlesNormalized[c][1], circlesNormalized[c][0]), circlesNormalized[c][2], (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
 
 displayImg(image)
+
+### Fin du chronomètre
+elapsed = timeit.default_timer() - start_time
+print ("Time elapsed : ", elapsed)
