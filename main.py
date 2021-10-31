@@ -87,19 +87,12 @@ def normalize(I,J,K, locMax):
                     if temp != 0:
                         locMaxNorm[i][j][k] = temp / k
 
-                        #petite triche pour gagner du temps
-                        #normalisé
-                        if temp/k > 18:
-                            circlesNormalized.append((i,j,k, temp/k))
-
-                        #non normalisé (il y aura que le gros cercle)
+                        #test non normalisé (il y aura que le gros cercle)
                         if temp == locMax.max():
                             circles.append((i, j, k, temp))                        
     return locMaxNorm
 
 ############# DEBUT ############
-circles = []
-circlesNormalized = []
 image = cv2.imread("images/fourn.png", cv2.IMREAD_GRAYSCALE)
 
 #1. Filtrage Gaussien (en cas de bruit ou de d ́etails très fins)
@@ -121,34 +114,21 @@ acc = np.zeros((I, J, int(K)))
 acc = classic_hough(I, J, K, tresholdedImg)
 
 #6 On cherche les maximums locaux
-locMax = ndimage.maximum_filter(acc, mode='constant', size=(5,5,5)) # dans un rayon d'un cube on a 26 cases voisines
+locMax = ndimage.maximum_filter(acc, mode='constant', size=(1,1,1)) # dans un rayon d'un cube on a 26 cases voisines
 
 #7 Normalisation et visualisation
+circles = []
+circlesNormalized = []
 locMaxNorm = normalize(I, J, K, locMax)
 
-# Nombre de plus hautes valeurs qu'on veut sélectionner
-N = 3
-selectedValues = np.argsort(locMaxNorm)[-N:, -N:, -N:] # Pour sélectionner N plus hautes valeurs triés par ordre décroissant
+#à l'arrache (pas opti) : on prend que les cercles qui sont près du max
+for x in range(locMaxNorm.shape[0]):
+    for y in range(locMaxNorm.shape[1]):
+        for z in range(locMaxNorm.shape[2]):
+            if locMaxNorm[x][y][z] >= 8:
+                circlesNormalized.append((x,y,z, locMaxNorm[x][y][z]))
 
-#Beaucoup trop long (cf triche dans la normlisation)
-#à l'arrache : on prend que les cercles qui sont près du max
-#circles = []
-#for x in range(locMaxNorm.shape[0]):
-#    for y in range(locMaxNorm.shape[1]):
-#        for z in range(locMaxNorm.shape[2]):
-#            if locMaxNorm[x][y][z] > 15:
-#                circles.append((x,y,z))
-
-
-#for x in range(selectedValues.shape[0]):
-#    for y in range(selectedValues.shape[1]):
-#        for z in range(selectedValues.shape[2]):
-#            #a = int(selectedValues[0][x][0])
-#            #b = int(selectedValues[y][0][0])
-#            #rad = int(selectedValues[0][0][z])
-#            cv2.circle(image, (x, y), z, (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
-
-for c in range(0, len(circles)):
-    cv2.circle(image, (circles[c][0], circles[c][1]), circles[c][2], (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
+for c in range(0, len(circlesNormalized)):
+    cv2.circle(image, (circlesNormalized[c][1], circlesNormalized[c][0]), circlesNormalized[c][2], (0, 0, 255), 1) # cv2.circle(image, center_coordinates, radius, color, thickness)
 
 displayImg(image)
